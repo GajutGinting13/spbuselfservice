@@ -19,6 +19,7 @@ if ($hasil) {
     ];
     $_SESSION['username'] = $user;
     $_SESSION['password'] = $password;
+    $_SESSION['id'] = $hasil['id'];
 } else {
     $response = [
         'success' => false,

@@ -6,6 +6,8 @@
     include 'head.php';
     session_start();
     $nama = $_SESSION['nama'];
+    $jenis = $_POST['jenis'];
+    $jumlah = $_POST['jumlah'];
     ?>
     <style>
         #video-container {
@@ -73,8 +75,7 @@
         <div class="corner-border bottom-left"></div>
         <div class="corner-border bottom-right"></div>
     </div>
-
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
     <script>
         const key = CryptoJS.enc.Utf8.parse('1234567890123456'); // 16-byte key
@@ -93,9 +94,9 @@
             });
             return decrypted.toString(CryptoJS.enc.Utf8);
         }
-        // const encryptedText = encryptText("controller/validasi.php?station=1");
+        // const encryptedText = encryptText("proses.php?spbu=1");
         // console.log(encryptedText);
-        // Hasil Enkripsi = "scuKnmNClbdE6mgqC4QgCzlkKQ8ig9nZXGjz3v4NfsunA9t+YyUXsLtLoTS4jH2+";
+        // Hasil Enkripsi = "6JXcZ6L839hD2HmK9AmEs808svSWeJtBNyisuno5Dys=";
         // Mulai Scan
         const video = document.getElementById('qr-video');
         let scanner = new Instascan.Scanner({
@@ -104,9 +105,9 @@
         });
 
         scanner.addListener('scan', function(content) {
-            if (content == "scuKnmNClbdE6mgqC4QgCzlkKQ8ig9nZXGjz3v4NfsunA9t+YyUXsLtLoTS4jH2+") {
+            if (content == "6JXcZ6L839hD2HmK9AmEs808svSWeJtBNyisuno5Dys=") {
                 const decryptedText = decryptText(content);
-                const url = "https://smartcharger.gaject.online/" + decryptedText + "&paket=<?php echo $_GET['paket'] ?>&nama=<?php echo $nama ?>";
+                const url = "https://gaspas.gaject.online/" + decryptedText + "&jenis=<?= $jenis ?>&jumlah=<?= $jumlah ?>";
                 window.location.href = url;
             } else {
                 alert("QRcode Tidak Dikenal.");
