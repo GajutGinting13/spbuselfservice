@@ -107,7 +107,7 @@
         scanner.addListener('scan', function(content) {
             if (content == "6JXcZ6L839hD2HmK9AmEs808svSWeJtBNyisuno5Dys=") {
                 const decryptedText = decryptText(content);
-                const url = "https://gaspas.gaject.online/" + decryptedText + "&jenis=<?= $jenis ?>&jumlah=<?= $jumlah ?>";
+                const url = "https://gaspas.gaject.online/User/" + decryptedText + "&jenis=<?= $jenis ?>&jumlah=<?= $jumlah ?>";
                 window.location.href = url;
             } else {
                 alert("QRcode Tidak Dikenal.");

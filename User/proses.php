@@ -2,37 +2,63 @@
 
 include '../database/koneksi.php';
 session_start();
+
+if (!isset($_SESSION['id'])) {
+    echo "<script>alert('Session expired. Please login again.');window.location.href = '../';</script>";
+    exit();
+}
+
 $id = $_SESSION['id'];
 $jumlah = intval($_GET['jumlah']);
 $jenis = $_GET['jenis'];
-$sql = mysqli_query($koneksi, "SELECT * FROM user WHERE id = '$id'");
-$hasil = mysqli_fetch_array($sql);
+
+$sql = $koneksi->prepare("SELECT saldo FROM user WHERE id = ?");
+$sql->bind_param("i", $id);
+$sql->execute();
+$result = $sql->get_result();
+if ($result->num_rows === 0) {
+    echo "<script>alert('User not found.');window.location.href = '/spbuselfservice/User';</script>";
+    exit();
+}
+
+$hasil = $result->fetch_assoc();
 $saldo = intval($hasil['saldo']);
-if ($jenis == "premium") {
-    if ((8000 * $jumlah) >= $saldo) {
-        $total = 8000 * $jumlah;
-        $sql1 = mysqli_query($koneksi, "INSERT INTO proses ('nilai')values($total)");
-        $saldo_terakhir = $saldo - $total;
-        mysqli_query($koneksi, "UPDATE user SET saldo = '$saldo_terakhir' WHERE id = '$id'");
-    } else {
-        echo "<script>alert('Saldo Anda Kurang');window.location.href = '';</script>";
-    }
-} else if ($jenis == "pertalite") {
-    if ((10000 * $jumlah) >= $saldo) {
-        $total = 10000 * $jumlah;
-        $sql1 = mysqli_query($koneksi, "INSERT INTO proses ('nilai')values($total)");
-        $saldo_terakhir = $saldo - $total;
-        mysqli_query($koneksi, "UPDATE user SET saldo = '$saldo_terakhir' WHERE id = '$id'");
-    } else {
-        echo "<script>alert('Saldo Anda Kurang');window.location.href = '';</script>";
-    }
+$harga_per_liter = 0;
+
+switch ($jenis) {
+    case 'premium':
+        $harga_per_liter = 8000;
+        break;
+    case 'pertalite':
+        $harga_per_liter = 10000;
+        break;
+    default:
+        $harga_per_liter = 13000;
+        break;
+}
+
+$total = $harga_per_liter * $jumlah;
+
+if ($total > $saldo) {
+    echo "<script>alert('Saldo Anda Kurang: $saldo');window.location.href = '/spbuselfservice/User';</script>";
 } else {
-    if ((13000 * $jumlah) >= $saldo) {
-        $total = 10000 * $jumlah;
-        $sql1 = mysqli_query($koneksi, "INSERT INTO proses ('nilai')values($total)");
+    $koneksi->begin_transaction();
+    $kirim = $jumlah * 1000;
+    try {
+        $sql1 = $koneksi->prepare("INSERT INTO proses (nilai) VALUES (?)");
+        $sql1->bind_param("i", $kirim);
+        $sql1->execute();
+
         $saldo_terakhir = $saldo - $total;
-        mysqli_query($koneksi, "UPDATE user SET saldo = '$saldo_terakhir' WHERE id = '$id'");
-    } else {
-        echo "<script>alert('Saldo Anda Kurang');window.location.href = '';</script>";
+        $sql2 = $koneksi->prepare("UPDATE user SET saldo = ? WHERE id = ?");
+        $sql2->bind_param("ii", $saldo_terakhir, $id);
+        $sql2->execute();
+
+        $koneksi->commit();
+        echo "<script>window.location.href = '/spbuselfservice/User';</script>";
+    } catch (Exception $e) {
+        $koneksi->rollback();
+        error_log("Transaction failed: " . $e->getMessage());
+        echo "<script>alert('Transaction failed. Please try again.');window.location.href = '/spbuselfservice/User';</script>";
     }
 }
