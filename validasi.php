@@ -1,5 +1,6 @@
 <?php
 require 'database/koneksi.php';
+session_start();
 $user = $_POST['username'];
 $password = $_POST['password'];
 $stmt = $koneksi->prepare("SELECT * FROM `user` WHERE `username` = ? AND `password` = ?");
@@ -16,6 +17,8 @@ if ($hasil) {
         'message' => "Selamat Datang " . $nama,
         'role' => $role,
     ];
+    $_SESSION['username'] = $user;
+    $_SESSION['password'] = $password;
 } else {
     $response = [
         'success' => false,
