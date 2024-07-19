@@ -17,7 +17,7 @@ $sql->bind_param("i", $id);
 $sql->execute();
 $result = $sql->get_result();
 if ($result->num_rows === 0) {
-    echo "<script>alert('User not found.');window.location.href = '/spbuselfservice/User';</script>";
+    echo "<script>alert('User not found.');window.location.href = '/User';</script>";
     exit();
 }
 
@@ -40,7 +40,7 @@ switch ($jenis) {
 $total = $harga_per_liter * $jumlah;
 
 if ($total > $saldo) {
-    echo "<script>alert('Saldo Anda Kurang: $saldo');window.location.href = '/spbuselfservice/User';</script>";
+    echo "<script>alert('Saldo Anda Kurang: $saldo');window.location.href = '/User';</script>";
 } else {
     $koneksi->begin_transaction();
     $kirim = $jumlah * 1000;
@@ -55,10 +55,10 @@ if ($total > $saldo) {
         $sql2->execute();
 
         $koneksi->commit();
-        echo "<script>window.location.href = '/spbuselfservice/User';</script>";
+        echo "<script>window.location.href = '/User';</script>";
     } catch (Exception $e) {
         $koneksi->rollback();
         error_log("Transaction failed: " . $e->getMessage());
-        echo "<script>alert('Transaction failed. Please try again.');window.location.href = '/spbuselfservice/User';</script>";
+        echo "<script>alert('Transaction failed. Please try again.');window.location.href = '/User';</script>";
     }
 }
