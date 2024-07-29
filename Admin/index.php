@@ -280,6 +280,7 @@ function formatRupiah($number)
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Data Pelanggan</h5>
+              <button onclick='tambahData()' class="btn btn-primary">Tambah Data</button>
               <table class="table datatable">
                 <thead>
                   <tr>
@@ -350,6 +351,52 @@ function formatRupiah($number)
         return true;
       }
       return false;
+    }
+
+    function tambahData() {
+      var nama = prompt("Masukkan nama:", "");
+      if (nama == null || nama == "") {
+        alert("Nama tidak boleh kosong!");
+        return false;
+      }
+
+      var username = prompt("Masukkan username:", "");
+      if (username == null || username == "") {
+        alert("Username tidak boleh kosong!");
+        return false;
+      }
+
+      var password = prompt("Masukkan password:", "");
+      if (password == null || password == "") {
+        alert("Password tidak boleh kosong!");
+        return false;
+      }
+
+      // Membuat form secara dinamis dan mengirim data
+      var form = document.createElement("form");
+      form.setAttribute("method", "POST");
+      form.setAttribute("action", "simpan.php");
+
+      var namaField = document.createElement("input");
+      namaField.setAttribute("type", "hidden");
+      namaField.setAttribute("name", "nama");
+      namaField.setAttribute("value", nama);
+      form.appendChild(namaField);
+
+      var usernameField = document.createElement("input");
+      usernameField.setAttribute("type", "hidden");
+      usernameField.setAttribute("name", "username");
+      usernameField.setAttribute("value", username);
+      form.appendChild(usernameField);
+
+      var passwordField = document.createElement("input");
+      passwordField.setAttribute("type", "hidden");
+      passwordField.setAttribute("name", "password");
+      passwordField.setAttribute("value", password);
+      form.appendChild(passwordField);
+
+      document.body.appendChild(form);
+      form.submit();
     }
   </script>
 
