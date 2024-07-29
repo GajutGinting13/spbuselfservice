@@ -304,10 +304,11 @@ function formatRupiah($number)
                                 <input type='hidden' name='id' value='" . $row["id"] . "'>
                                 <button type='submit' class='btn btn-danger'>Hapus</button>
                             </form>
-                            <form method='POST' action='topup.php' style='display:inline-block;'>
-                                <input type='hidden' name='id' value='" . $row["id"] . "'>
-                                <button type='submit' class='btn btn-secondary'>Topup Saldo</button>
-                            </form>
+                            <form method='POST' action='topup.php' style='display:inline-block;' onsubmit='return topupPrompt(this);'>
+                              <input type='hidden' name='id' value='" . $row["id"] . "'>
+                              <input type='hidden' name='amount' value=''>
+                              <button type='submit' class='btn btn-secondary'>Topup Saldo</button>
+                          </form>
                         </td>
                     </tr>";
                   }
@@ -340,9 +341,17 @@ function formatRupiah($number)
   <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
   <script src="assets/vendor/tinymce/tinymce.min.js"></script>
   <script src="assets/vendor/php-email-form/validate.js"></script>
-
-  <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
+  <script>
+    function topupPrompt(form) {
+      var amount = prompt("Masukkan jumlah saldo yang ingin di-topup:", "");
+      if (amount != null && amount != "") {
+        form.amount.value = amount;
+        return true;
+      }
+      return false;
+    }
+  </script>
 
 </body>
 
